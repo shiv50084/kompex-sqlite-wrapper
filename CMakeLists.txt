@@ -22,8 +22,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 add_definitions(-DKOMPEX_SQLITEWRAPPER_EXPORT -DKOMPEX_SQLITEWRAPPER_DYN -std=c++0x)
 
 find_package(Sqlite3 REQUIRED)
+find_package(GTest REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/gtest)
 include_directories(${SQLITE3_INCLUDE_DIR})
 
 set(LIB_TARGET kompex-sqlite-wrapper)
@@ -59,4 +61,18 @@ add_executable(${EXAMPLE_TARGET} ./example/main.cpp)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
 target_link_libraries(${EXAMPLE_TARGET} ${LIB_TARGET} ${SQLITE3_LIBRARIES} pthread)
+
+
+# Build Google unit test
+
+set(GTEST_TARGET unitTest)
+add_executable(${GTEST_TARGET} ./gtest/test_KompexSQLiteWrapper.cpp)
+
+link_directories(${PROJECT_SOURCE_DIR}/lib)
+
+target_link_libraries(${GTEST_TARGET} ${LIB_TARGET} ${SQLITE3_LIBRARIES} ${GTEST_BOTH_LIBRARIES} pthread)
+
+set(GTEST_ARGS "--gtest_color=yes ")
+enable_testing()
+add_test(KompexSQLiteWrapperTest ${CMAKE_CURRENT_BINARY_DIR}/${TARGET} ${GTEST_ARGS})
 
