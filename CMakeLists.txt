@@ -19,7 +19,7 @@ endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-add_definitions(-DKOMPEX_SQLITEWRAPPER_EXPORT -DKOMPEX_SQLITEWRAPPER_DYN -std=c++0x)
+add_definitions(-std=c++0x)
 
 find_package(Sqlite3 REQUIRED)
 find_package(GTest REQUIRED)
@@ -36,10 +36,16 @@ set(LIB_SRC
 
 # Shared library
 if (KOMPEX_SQLITE_WRAPPER_SHARED)
-    set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
-    set(CMAKE_SHARED_LINKER_FLAGS "-export-dynamic")
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -export-dynamic")
+    endif()
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	set(CMAKE_SHARED_LIBRARY_SUFFIX ".dylib")
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
+    endif()
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib")
-    add_library(${LIB_TARGET} SHARED ${SQLITE3_LIBRARIES} ${LIB_SRC})
+    add_library(${LIB_TARGET} SHARED  ${LIB_SRC} ${SQLITE3_LIBRARIES})
 endif()
 
 #Static library
