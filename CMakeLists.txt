@@ -19,7 +19,7 @@ endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-add_definitions(std=c++0x)
+add_definitions(-std=c++0x)
 
 find_package(Sqlite3 REQUIRED)
 find_package(GTest REQUIRED)
