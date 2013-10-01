@@ -40,7 +40,7 @@ if (KOMPEX_SQLITE_WRAPPER_SHARED)
     set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
     set(CMAKE_SHARED_LINKER_FLAGS "-export-dynamic")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib")
-    add_library(${LIB_TARGET} SHARED ${SQLITE3_LIBRARIES} ${LIB_SRC})
+    add_library(${LIB_TARGET} SHARED ${SQLITE3_LIBRARY_RELEASE} ${LIB_SRC})
 endif()
 
 #Static library
@@ -49,7 +49,7 @@ if (KOMPEX_SQLITE_WRAPPER_STATIC)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
     set(CMAKE_STATIC_LIBRARY_SUFFIX ".a")
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib")
-    add_library(${LIB_STATIC_TARGET} STATIC ${SQLITE3_LIBRARIES} ${LIB_SRC})
+    add_library(${LIB_STATIC_TARGET} STATIC ${SQLITE3_LIBRARY_RELEASE} ${LIB_SRC})
     set_target_properties(${LIB_STATIC_TARGET} PROPERTIES OUTPUT_NAME ${LIB_TARGET})
 endif()
 
@@ -61,7 +61,7 @@ add_executable(${EXAMPLE_TARGET} ./example/main.cpp)
 
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
-target_link_libraries(${EXAMPLE_TARGET} ${LIB_TARGET} ${SQLITE3_LIBRARIES} pthread)
+target_link_libraries(${EXAMPLE_TARGET} ${LIB_TARGET} ${SQLITE3_LIBRARY_RELEASE} pthread)
 
 
 # Build Google unit test
@@ -71,7 +71,7 @@ add_executable(${GTEST_TARGET} ./gtest/test_KompexSQLiteWrapper.cpp)
 
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
-target_link_libraries(${GTEST_TARGET} ${LIB_TARGET} ${SQLITE3_LIBRARIES} ${GTEST_BOTH_LIBRARIES} pthread)
+target_link_libraries(${GTEST_TARGET} ${LIB_TARGET} ${SQLITE3_LIBRARY_RELEASE} ${GTEST_BOTH_LIBRARIES} pthread)
 
 set(GTEST_ARGS "--gtest_color=yes ")
 enable_testing()
