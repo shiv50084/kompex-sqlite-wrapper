@@ -653,13 +653,12 @@ TEST(TestKompexSQLiteWrapper, test_transactions)
     delete pDatabase;
 }
 
-void createTableAndPopulate(Kompex::SQLiteDatabase *pDatabase, Kompex::SQLiteStatement *pStmt)
+void populate(Kompex::SQLiteDatabase *pDatabase, Kompex::SQLiteStatement *pStmt)
 {
-    // Create table
-    pStmt->SqlStatement("CREATE TABLE user (userID INTEGER NOT NULL PRIMARY KEY, lastName VARCHAR(50) NOT NULL, firstName VARCHAR(50), age INTEGER, weight DOUBLE)");
     // Insert data
     pStmt->SqlStatement("INSERT INTO user (userID, lastName, firstName, age, weight) VALUES (1, 'Lehmann', 'Jamie', 20, 65.5)");
     pStmt->SqlStatement("INSERT INTO user (userID, lastName, firstName, age, weight) VALUES (2, 'Burgdorf', 'Peter', 55, NULL)");
+    usleep(10);
     pStmt->SqlStatement("INSERT INTO user (userID, lastName, firstName, age, weight) VALUES (3, 'Lehmann', 'Fernando', 18, 70.2)");
     pStmt->SqlStatement("INSERT INTO user (userID, lastName, firstName, age, weight) VALUES (4, 'Lehmann', 'Carlene', 17, 50.8)");
     pStmt->SqlStatement("INSERT INTO user (userID, lastName, firstName, age, weight) VALUES (5, 'Murahama', 'Yura', 28, 60.2)");
@@ -675,14 +674,22 @@ TEST(TestKompexSQLiteWrapper, test_populate_sqlitedb_separate_thread)
 
     Kompex::SQLiteStatement *pStmt = new Kompex::SQLiteStatement(pDatabase);
 
-    std::thread t(createTableAndPopulate, pDatabase, pStmt);
+    pStmt->SqlStatement("CREATE TABLE user (userID INTEGER NOT NULL PRIMARY KEY, lastName VARCHAR(50) NOT NULL, firstName VARCHAR(50), age INTEGER, weight DOUBLE)");
 
-    t.detach();
+    std::thread t(populate, pDatabase, pStmt);
+
+
+    // No data in the table yet.
+    ASSERT_EQ(pStmt->GetSqlResultString("SELECT lastName FROM user WHERE userID = 5"), "");
+    ASSERT_EQ(pStmt->GetSqlResultString("SELECT firstName FROM user WHERE weight = 50.8"), "");
+
     sleep(1);
-    // Instant results
-    ASSERT_EQ(pStmt->GetSqlResultString("SELECT lastName FROM user WHERE userID = 1"), "Lehmann");
-    ASSERT_EQ(pStmt->GetSqlResultInt("SELECT userID FROM user WHERE firstName = 'Yura'"), 5);
+
+    // Now there are some data in the table.
+    ASSERT_EQ(pStmt->GetSqlResultInt("SELECT userID FROM user WHERE firstName = 'Jamie'"), 1);
     ASSERT_EQ(pStmt->GetSqlResultDouble("SELECT weight FROM user WHERE age = 20"), 65.5);
+
+    t.join();
 
     // Remove file
     std::remove(filenameTestDb.c_str());
