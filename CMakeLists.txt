@@ -19,7 +19,7 @@ endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-add_definitions(-DKOMPEX_SQLITEWRAPPER_EXPORT -DKOMPEX_SQLITEWRAPPER_DYN -std=c++0x)
+add_definitions(std=c++0x)
 
 find_package(Sqlite3 REQUIRED)
 find_package(GTest REQUIRED)
@@ -27,6 +27,7 @@ find_package(GTest REQUIRED)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/gtest)
 include_directories(${SQLITE3_INCLUDE_DIR})
+include_directories(${GTEST_INCLUDE_DIR})
 
 set(LIB_TARGET kompex-sqlite-wrapper)
 set(LIB_SRC
