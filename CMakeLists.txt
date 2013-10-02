@@ -35,6 +35,14 @@ set(LIB_SRC
     ./src/KompexSQLiteDatabase.cpp
     ./src/KompexSQLiteStatement.cpp)
 
+set(LIB_INCLUDE
+    ./include/KompexSQLiteBlob.h
+    ./include/KompexSQLiteDatabase.h
+    ./include/KompexSQLiteException.h
+    ./include/KompexSQLitePrerequisites.h
+    ./include/KompexSQLiteStatement.h
+    ./include/KompexSQLiteStreamRedirection.h)
+
 # Shared library
 if (KOMPEX_SQLITE_WRAPPER_SHARED)
     if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -47,6 +55,8 @@ if (KOMPEX_SQLITE_WRAPPER_SHARED)
     endif()
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib")
     add_library(${LIB_TARGET} SHARED ${SQLITE3_LIBRARY_RELEASE} ${LIB_SRC})
+
+    install(TARGETS ${LIB_TARGET} LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 endif()
 
 #Static library
@@ -57,8 +67,12 @@ if (KOMPEX_SQLITE_WRAPPER_STATIC)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib")
     add_library(${LIB_STATIC_TARGET} STATIC ${SQLITE3_LIBRARY_RELEASE} ${LIB_SRC})
     set_target_properties(${LIB_STATIC_TARGET} PROPERTIES OUTPUT_NAME ${LIB_TARGET})
+
+    install(TARGETS ${LIB_STATIC_TARGET} ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 endif()
 
+# Install header files
+install(FILES ${LIB_INCLUDE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
 # Build example file.
 
